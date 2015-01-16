@@ -1,0 +1,4 @@
+
+namespace MagInspect {
+	class GtkInspector;
+}
