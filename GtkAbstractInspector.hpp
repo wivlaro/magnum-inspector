@@ -34,7 +34,7 @@ std::string demangle(const char* name) {
 #endif
 
 
-namespace MagInspect {
+namespace MagnumInspector {
 
 template<uint Dimensions, typename ValueType>
 inline void GtkAbstractInspector::editableObject(Magnum::SceneGraph::AbstractObject<Dimensions, ValueType>& object) {

@@ -19,7 +19,7 @@
 #define INSPECT_EDITABLE(field) inspector.editable(#field, field);
 #define INSPECT_READONLY(field) inspector.readonly(#field, field);
 
-namespace MagInspect {
+namespace MagnumInspector {
 	
 class Inspectable;
 

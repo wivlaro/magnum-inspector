@@ -7,7 +7,7 @@
 #include "Inspectable.h"
 #include <Magnum/SceneGraph/AbstractObject.h>
 
-namespace MagInspect {
+namespace MagnumInspector {
 
 class GtkAbstractInspector : public Inspector
 {

@@ -3,7 +3,7 @@
 #include <gtkmm/frame.h>
 #include "GtkAbstractInspector.h"
 
-namespace MagInspect {
+namespace MagnumInspector {
 
 class GtkObjectFrame : public Gtk::Frame, public GtkAbstractInspector
 {

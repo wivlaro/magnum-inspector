@@ -1,7 +1,7 @@
 
 #include "Inspectable.h"
 
-namespace MagInspect {
+namespace MagnumInspector {
 
 	
 	

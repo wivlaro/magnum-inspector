@@ -2,7 +2,7 @@
 
 #include <gtkmm/container.h>
 
-namespace MagInspect {
+namespace MagnumInspector {
 
 class GtkChildPopulator
 {

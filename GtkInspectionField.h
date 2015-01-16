@@ -4,7 +4,7 @@
 #include <gtkmm/widget.h>
 #include <gtkmm/label.h>
 
-namespace MagInspect {
+namespace MagnumInspector {
 
 class GtkInspectionField : public Gtk::Box
 {

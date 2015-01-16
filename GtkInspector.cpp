@@ -19,7 +19,7 @@
 #include "GtkChildPopulator.h"
 
 
-namespace MagInspect {
+namespace MagnumInspector {
 	
 class MyModelColumns : public Gtk::TreeModel::ColumnRecord
 {

@@ -14,7 +14,7 @@
 #include "Inspectable.h"
 #include "GtkAbstractInspector.h"
 
-namespace MagInspect {
+namespace MagnumInspector {
 
 typedef Magnum::SceneGraph::Object<Magnum::SceneGraph::MatrixTransformation3D> Object3D;
 typedef Magnum::SceneGraph::Object<Magnum::SceneGraph::MatrixTransformation2D> Object2D;
@@ -56,7 +56,7 @@ private:
 	void setRoot(Object3D* node);
     void setupDetails(Object3D* node);
     void updateDetailNode();
-    void addInspectableFields(Gtk::Box* box, MagInspect::Inspectable* arg2);
+    void addInspectableFields(Gtk::Box* box, MagnumInspector::Inspectable* arg2);
 		
 };
 

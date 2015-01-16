@@ -3,7 +3,7 @@
 #include "Inspector.h"
 #include <string>
 
-namespace MagInspect {
+namespace MagnumInspector {
 
 class Inspectable
 {

@@ -1,4 +1,4 @@
 
-namespace MagInspect {
+namespace MagnumInspector {
 	class GtkInspector;
 }

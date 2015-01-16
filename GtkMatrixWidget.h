@@ -1,7 +1,7 @@
 #pragma once
 #include <gtkmm/grid.h>
 
-namespace MagInspect {
+namespace MagnumInspector {
 
 class GtkMatrixWidget : public Gtk::Grid
 {

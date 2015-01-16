@@ -1,6 +1,6 @@
 #include "GtkInspectionField.h"
 
-namespace MagInspect {
+namespace MagnumInspector {
 
 	
 	

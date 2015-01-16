@@ -8,7 +8,7 @@
 #include "GtkAbstractInspector.hpp"
 #include <numeric>
 
-namespace MagInspect {
+namespace MagnumInspector {
 
 void GtkAbstractInspector::readonly(const char* name, const float* f, uint n, uint m)
 {

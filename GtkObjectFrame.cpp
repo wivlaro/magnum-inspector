@@ -1,6 +1,6 @@
 #include "GtkObjectFrame.h"
 
-namespace MagInspect {
+namespace MagnumInspector {
 	
 	
 
