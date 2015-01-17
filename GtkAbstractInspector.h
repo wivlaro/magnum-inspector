@@ -41,8 +41,6 @@ public:
 	virtual void editable(Magnum::SceneGraph::AbstractFeature3D& i) { editableFeature(i); }
 	virtual void readonly(Magnum::SceneGraph::AbstractFeature3D& i) { readonlyFeature(i); }
 	
-	void resetChildPopulator() { childPopulator.reset(); }
-	
 protected:
     GtkChildPopulator childPopulator;
 	

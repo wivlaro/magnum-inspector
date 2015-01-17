@@ -9,14 +9,9 @@ class GtkObjectFrame : public Gtk::Frame, public GtkAbstractInspector
 {
 public:
 	
-	GtkObjectFrame()
-	:	box(Gtk::ORIENTATION_VERTICAL)
-	{
-		add(box);
-		childPopulator.setContainer(&box);
-	}
+	GtkObjectFrame();
 	
-    virtual ~GtkObjectFrame() { }
+    virtual ~GtkObjectFrame();
 	
  	
 private:

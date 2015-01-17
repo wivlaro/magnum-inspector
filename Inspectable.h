@@ -8,7 +8,7 @@ namespace MagnumInspector {
 class Inspectable
 {
 public:
-	virtual std::string getName() const { return std::to_string(intptr_t(this)); }
+	virtual std::string getName() const;
 	
 	virtual void onInspect(Inspector& inspector) = 0;
 };

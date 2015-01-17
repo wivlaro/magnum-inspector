@@ -8,21 +8,9 @@ class GtkChildPopulator
 {
 public:
 	
-	GtkChildPopulator(Gtk::Container* container_in = nullptr)
-	:	container(container_in)
-	{
-		if (container) reset();
-	}
-	
-	void reset() {
-		childIndex = 0;
-		childrenIterating = std::move(container->get_children());
-	}
-	
-	void setContainer(Gtk::Container* container)
-	{
-		this->container = container;
-	}
+	GtkChildPopulator(Gtk::Container* container_in = nullptr);
+	void reset();
+	void setContainer(Gtk::Container* container);
 
 	template<typename ChildWidget>
 	ChildWidget& ensureChild() {
@@ -43,9 +31,11 @@ public:
 		if (!widget) {
 			widget = Gtk::manage(new ChildWidget());
 			container->add(*widget);
+			widget->show();
 		}
 		return *widget;
 	}
+    void pruneRemaining();
 	
 private:
 	Gtk::Container* container;

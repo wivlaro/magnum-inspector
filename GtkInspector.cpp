@@ -106,7 +106,7 @@ void GtkInspector::setupDetails(Object3D* node)
 	detailNode = node;
 	
 	childPopulator.setContainer(detailsPane);
-	resetChildPopulator();
+	childPopulator.reset();
 	if (node) {
 		editable(*node);
 	}
@@ -115,7 +115,8 @@ void GtkInspector::setupDetails(Object3D* node)
 			detailsPane->remove(*child);
 		}
 	}
-	detailsPane->show_all();
+	childPopulator.pruneRemaining();
+// 	detailsPane->show_all();
 }
 
 void GtkInspector::setRoot(Object3D* node)

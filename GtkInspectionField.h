@@ -9,11 +9,7 @@ namespace MagnumInspector {
 class GtkInspectionField : public Gtk::Box
 {
 public:
-    GtkInspectionField()
-	:	valueWidget(nullptr)
-	{
-		add(labelWidget);
-	}
+    GtkInspectionField();
 	
 	Gtk::Label& getLabel() {
 		return labelWidget;
@@ -29,6 +25,7 @@ public:
 			widget = Gtk::manage(new ChildWidget());
 			add(*widget);
 			valueWidget = widget;
+			widget->show();
 		}
 		return *widget;
 	}

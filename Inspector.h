@@ -72,6 +72,7 @@ public:
 	virtual void editable(Magnum::SceneGraph::AbstractFeature3D& i) = 0;
 	virtual void readonly(Magnum::SceneGraph::AbstractFeature3D& i) = 0;
     
+	static std::string demangle(const char* name);
  
 #ifdef MAGNUMINSPECTOR_BOOST
     template<typename T>
@@ -84,7 +85,6 @@ public:
         if (auto actual = target.lock()) readonly(actual.get());
     }
 #endif
-	
 };
 
 
