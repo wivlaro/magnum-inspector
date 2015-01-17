@@ -55,12 +55,8 @@ inline void ensure_active(WidgetType& w, ValueType v) {
 void GtkAbstractInspector::readonly(const char* name, const float* f, uint n, uint m)
 {
 	auto& field = addField<GtkMatrixWidget>(name);
-	field.update<Gtk::SpinButton,const float>(f, n, m, [](Gtk::SpinButton& field, const float& value) {
-		ensure_range(field, double(std::numeric_limits<float>().lowest()), double(std::numeric_limits<float>().max()));
-		ensure_increments(field, 0.01, 1.0);
-		ensure_digits(field, 5u);
-		ensure_width_chars(field, 10);
-		ensure_value(field, double(value));
+	field.update<Gtk::Label,const float>(f, n, m, [](Gtk::Label& field, const float& value) {
+		ensure_text(field, std::to_string(value));
 	});
 }
 
@@ -81,8 +77,8 @@ void GtkAbstractInspector::editable(const char* name, float* f, uint n, uint m)
 
 void GtkAbstractInspector::readonly(const char* name, const int& i)
 {
-	auto& field = addField<Gtk::SpinButton>(name);
-	ensure_value(field, double(i));
+	auto& field = addField<Gtk::Label>(name);
+	ensure_text(field, std::to_string(i));
 }
 
 void GtkAbstractInspector::editable(const char* name, int& i)
@@ -98,7 +94,7 @@ void GtkAbstractInspector::editable(const char* name, int& i)
 
 void GtkAbstractInspector::readonly(const char* name, const std::string& s)
 {
-	auto& field = addField<Gtk::Entry>(name);
+	auto& field = addField<Gtk::Label>(name);
 	ensure_text(field, s);
 }
 
@@ -113,8 +109,8 @@ void GtkAbstractInspector::editable(const char* name, std::string& s)
 
 void GtkAbstractInspector::readonly(const char* name, const float& f)
 {
-	auto& field = addField<Gtk::SpinButton>(name);
-	ensure_value(field, double(f));
+	auto& field = addField<Gtk::Label>(name);
+	ensure_text(field, std::to_string(f));
 }
 
 void GtkAbstractInspector::editable(const char* name, float& f)
