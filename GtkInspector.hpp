@@ -1,3 +1,6 @@
+
+#pragma once
+
 #include "GtkInspector.h"
 
 #include <gtkmm/box.h>
@@ -20,19 +23,9 @@
 
 
 namespace MagnumInspector {
-	
-class MyModelColumns : public Gtk::TreeModel::ColumnRecord
-{
-public:
-	Gtk::TreeModelColumn<Glib::ustring> name;
-	Gtk::TreeModelColumn<Object3D*> pointer;
-	MyModelColumns() { add(name); add(pointer); }
-};
 
-MyModelColumns columns;
-
-
-GtkInspector::GtkInspector()
+template <class SceneGraphObject>
+GtkInspector<SceneGraphObject>::GtkInspector()
 :	refreshNextFrame(true)
 ,	gtkMain(nullptr)
 ,	window(nullptr)
@@ -45,7 +38,8 @@ GtkInspector::GtkInspector()
 
 }
 
-GtkInspector::~GtkInspector()
+template <class SceneGraphObject>
+GtkInspector<SceneGraphObject>::~GtkInspector()
 {
 	std::cout << "GtkInspector::~GtkInspector\n";
 	
@@ -53,9 +47,8 @@ GtkInspector::~GtkInspector()
 	delete gtkMain;
 }
 
-
-
-void GtkInspector::init()
+template <class SceneGraphObject>
+void GtkInspector<SceneGraphObject>::init()
 {
 	std::cout << "GtkInspector::init\n";
 	gtkMain = new Gtk::Main();
@@ -101,7 +94,8 @@ void GtkInspector::init()
 	window->show_all();
 }
 
-void GtkInspector::setupDetails(Object3D* node)
+template <class SceneGraphObject>
+void GtkInspector<SceneGraphObject>::setupDetails(SceneGraphObject* node)
 {
 	detailNode = node;
 	
@@ -119,7 +113,8 @@ void GtkInspector::setupDetails(Object3D* node)
 // 	detailsPane->show_all();
 }
 
-void GtkInspector::setRoot(Object3D* node)
+template <class SceneGraphObject>
+void GtkInspector<SceneGraphObject>::setRoot(SceneGraphObject* node)
 {
 	if (node) {
 		updateChildren(*node, treeStore->children());
@@ -129,7 +124,8 @@ void GtkInspector::setRoot(Object3D* node)
 	}
 }
 
-void GtkInspector::updateChildren(Object3D& node, const Gtk::TreeNodeChildren& dstChildren) 
+template <class SceneGraphObject>
+void GtkInspector<SceneGraphObject>::updateChildren(SceneGraphObject& node, const Gtk::TreeNodeChildren& dstChildren) 
 {
 	auto dstIt = dstChildren.begin();
 	for (auto srcChild = node.children().first(); srcChild; srcChild = srcChild->nextSibling()) {
@@ -144,7 +140,8 @@ void GtkInspector::updateChildren(Object3D& node, const Gtk::TreeNodeChildren& d
 	}
 }
 
-Glib::ustring GtkInspector::getNodeName(Object3D& node)
+template <class SceneGraphObject>
+Glib::ustring GtkInspector<SceneGraphObject>::getNodeName(SceneGraphObject& node)
 {
 	std::string name;
 	auto entity = dynamic_cast<Inspectable*>(&node);
@@ -158,7 +155,8 @@ Glib::ustring GtkInspector::getNodeName(Object3D& node)
 }
 
 
-void GtkInspector::updateNode(Object3D& node, const Gtk::TreeRow& row)
+template <class SceneGraphObject>
+void GtkInspector<SceneGraphObject>::updateNode(SceneGraphObject& node, const Gtk::TreeRow& row)
 {
 	if (row.get_value(columns.pointer) != &node || updateNamesToggle->get_active()) {
 		row.set_value(columns.name, getNodeName(node));
@@ -174,7 +172,8 @@ void GtkInspector::updateNode(Object3D& node, const Gtk::TreeRow& row)
 
 
 
-bool GtkInspector::update(Object3D* node)
+template <class SceneGraphObject>
+bool GtkInspector<SceneGraphObject>::update(SceneGraphObject* node)
 {
 // 	std::cout << "GtkInspector::update\n";
 	if (autoRefreshToggle->get_active() || refreshNextFrame) {
