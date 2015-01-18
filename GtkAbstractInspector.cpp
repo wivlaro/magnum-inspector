@@ -15,6 +15,7 @@ inline void ensure_range(WidgetType& w, ValueType min, ValueType max) {
 	ValueType currentMin,currentMax;
 	w.get_range(currentMin, currentMax);
 	if (currentMin != min || currentMax != max) {
+// 		std::cout << "set_range\n";
 		w.set_range(min, max);
 	}
 }
@@ -23,33 +24,49 @@ inline void ensure_increments(WidgetType& w, ValueType a, ValueType b) {
 	ValueType ca,cb;
 	w.get_increments(ca, cb);
 	if (ca != a || cb != b) {
+// 		std::cout << "set_incrementse\n";
 		w.set_increments(a, b);
 	}
 }
 	
 template<typename WidgetType, typename ValueType>
 inline void ensure_digits(WidgetType& w, ValueType v) {
-	if (w.get_digits() != v) w.set_digits(v);
+	if (w.get_digits() != v) {
+// 		std::cout << "set_digits\n";
+		w.set_digits(v);
+	}
 }
 	
 template<typename WidgetType, typename ValueType>
 inline void ensure_width_chars(WidgetType& w, ValueType v) {
-	if (w.get_width_chars() != v) w.set_width_chars(v);
+	if (w.get_width_chars() != v) {
+// 		std::cout << "set_width_chars\n";
+		w.set_width_chars(v);
+	}
 }
 	
 template<typename WidgetType, typename ValueType>
 inline void ensure_value(WidgetType& w, ValueType v) {
-	if (w.get_value() != v) w.set_value(v);
+	if (ValueType(w.get_value()) != v) {
+// 		std::cout << "set_value " << w.get_value() << "!=" << v << "\n";
+		w.set_value(v);
+	}
 }
 	
 template<typename WidgetType, typename ValueType>
 inline void ensure_text(WidgetType& w, ValueType v) {
-	if (w.get_text() != v) w.set_text(v);
+	if (w.get_text() != v) {
+// 		std::cout << "set_text “" << w.get_text() << "” != “" << v << "”\n";
+		w.set_text(v);
+	}
 }
 	
 template<typename WidgetType, typename ValueType>
 inline void ensure_active(WidgetType& w, ValueType v) {
-	if (w.get_active() != v) w.set_active(v);
+	if (w.get_active() != v) {
+// 		std::cout << "set_active\n";
+		w.set_active(v);
+	}
 }
 	
 void GtkAbstractInspector::readonly(const char* name, const float* f, uint n, uint m)
@@ -84,6 +101,7 @@ void GtkAbstractInspector::readonly(const char* name, const int& i)
 void GtkAbstractInspector::editable(const char* name, int& i)
 {
 	auto& field = addField<Gtk::SpinButton>(name);
+	ensure_range(field, double(std::numeric_limits<int>().lowest()), double(std::numeric_limits<int>().max()));
 	ensure_digits(field, 0u);
 	ensure_increments(field, 1.0, 10.0);
 	if (!field.has_focus()) ensure_value(field, double(i));
@@ -116,6 +134,7 @@ void GtkAbstractInspector::readonly(const char* name, const float& f)
 void GtkAbstractInspector::editable(const char* name, float& f)
 {
 	auto& field = addField<Gtk::SpinButton>(name);
+	ensure_range(field, double(std::numeric_limits<float>().lowest()), double(std::numeric_limits<float>().max()));
 	if (!field.has_focus()) ensure_value(field, double(f));
 	field.signal_value_changed().connect([&] {
 		f = float(field.get_value());
