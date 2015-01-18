@@ -19,8 +19,14 @@ public:
 	virtual void editable(const char* name, bool& i);
 	virtual void readonly(const char* name, bool i);
 	
-	virtual void editable(const char* name, int& i);
-	virtual void readonly(const char* name, const int& i);
+	virtual void editable(const char* name, int& i) { editableInteger(name, i); }
+	virtual void readonly(const char* name, const int& i) { readonlyInteger(name, i); }
+	
+	virtual void editable(const char* name, long& i) { editableInteger(name, i); }
+	virtual void readonly(const char* name, const long& i) { readonlyInteger(name, i); }
+	
+	virtual void editable(const char* name, unsigned long& i) { editableInteger(name, i); }
+	virtual void readonly(const char* name, const unsigned long& i) { readonlyInteger(name, i); }
 	
     virtual void editable(const char* name, float& f);
     virtual void readonly(const char* name, const float& f);
@@ -63,6 +69,12 @@ private:
 	
 	template<uint Dimensions, typename ValueType>
 	void readonlyFeature(Magnum::SceneGraph::AbstractFeature<Dimensions, ValueType>& feature);
+	
+
+	template<typename ValueType>
+	void editableInteger(const char* name, ValueType& i);
+	template<typename ValueType>
+	void readonlyInteger(const char* name, const ValueType& i);
 };
 
 }

@@ -41,6 +41,12 @@ public:
 	virtual void editable(const char* name, int& i) = 0;
 	virtual void readonly(const char* name, const int& i) = 0;
 	
+	virtual void editable(const char* name, long& i) = 0;
+	virtual void readonly(const char* name, const long& i) = 0;
+	
+	virtual void editable(const char* name, unsigned long& i) = 0;
+	virtual void readonly(const char* name, const unsigned long& i) = 0;
+	
 	virtual void editable(const char* name, Magnum::Vector2& i) { editable(name, i.data(), 2u, 1u); }
 	virtual void readonly(const char* name, const Magnum::Vector2& i) { readonly(name, i.data(), 2u, 1u); }
 	
