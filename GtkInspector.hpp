@@ -97,10 +97,13 @@ void GtkInspector<SceneGraphObject>::init()
 template <class SceneGraphObject>
 void GtkInspector<SceneGraphObject>::setupDetails(SceneGraphObject* node)
 {
-	detailNode = node;
 	
 	childPopulator.setContainer(detailsPane);
 	childPopulator.reset();
+	if (detailNode != node) {
+		childPopulator.pruneRemaining();
+		detailNode = node;
+	}
 	if (node) {
 		editable(*node);
 	}
