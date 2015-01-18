@@ -38,8 +38,23 @@ public:
 	virtual void editable(const char* name, float* f, unsigned n, unsigned m) = 0;
 	virtual void readonly(const char* name, const float* f, unsigned n, unsigned m) = 0;
 	
+	virtual void editable(const char* name, char& i) = 0;
+	virtual void readonly(const char* name, const char& i) = 0;
+	
+	virtual void editable(const char* name, unsigned char& i) = 0;
+	virtual void readonly(const char* name, const unsigned char& i) = 0;
+	
+	virtual void editable(const char* name, short& i) = 0;
+	virtual void readonly(const char* name, const short& i) = 0;
+	
+	virtual void editable(const char* name, unsigned short& i) = 0;
+	virtual void readonly(const char* name, const unsigned short& i) = 0;
+	
 	virtual void editable(const char* name, int& i) = 0;
 	virtual void readonly(const char* name, const int& i) = 0;
+	
+	virtual void editable(const char* name, unsigned int& i) = 0;
+	virtual void readonly(const char* name, const unsigned int& i) = 0;
 	
 	virtual void editable(const char* name, long& i) = 0;
 	virtual void readonly(const char* name, const long& i) = 0;

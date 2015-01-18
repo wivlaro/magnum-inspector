@@ -19,8 +19,23 @@ public:
 	virtual void editable(const char* name, bool& i);
 	virtual void readonly(const char* name, bool i);
 	
+	virtual void editable(const char* name, char& i) { editableInteger(name, i); }
+	virtual void readonly(const char* name, const char& i) { readonlyInteger(name, i); }
+	
+	virtual void editable(const char* name, unsigned char& i) { editableInteger(name, i); }
+	virtual void readonly(const char* name, const unsigned char& i) { readonlyInteger(name, i); }
+	
+	virtual void editable(const char* name, short& i) { editableInteger(name, i); }
+	virtual void readonly(const char* name, const short& i) { readonlyInteger(name, i); }
+	
+	virtual void editable(const char* name, unsigned short& i) { editableInteger(name, i); }
+	virtual void readonly(const char* name, const unsigned short& i) { readonlyInteger(name, i); }
+	
 	virtual void editable(const char* name, int& i) { editableInteger(name, i); }
 	virtual void readonly(const char* name, const int& i) { readonlyInteger(name, i); }
+	
+	virtual void editable(const char* name, unsigned& i) { editableInteger(name, i); }
+	virtual void readonly(const char* name, const unsigned& i) { readonlyInteger(name, i); }
 	
 	virtual void editable(const char* name, long& i) { editableInteger(name, i); }
 	virtual void readonly(const char* name, const long& i) { readonlyInteger(name, i); }
