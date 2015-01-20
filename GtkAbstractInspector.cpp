@@ -57,6 +57,8 @@ void GtkAbstractInspector::editable(const char* name, float& f)
 {
 	auto& field = addField<Gtk::SpinButton>(name);
 	ensure_range(field, double(std::numeric_limits<float>().lowest()), double(std::numeric_limits<float>().max()));
+	ensure_digits(field, 5u);
+	ensure_width_chars(field, 10);
 	if (!field.has_focus()) ensure_value(field, double(f));
 	field.signal_value_changed().connect([&] {
 		f = float(field.get_value());
