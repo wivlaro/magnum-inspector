@@ -49,18 +49,18 @@ public:
     virtual void editable(const char* name, float* f, uint n, uint m);
     virtual void readonly(const char* name, const float* f, uint n, uint m);
 	
-	virtual void editable(Inspectable* i);
-	virtual void readonly(Inspectable* i);
+	virtual void editable(const char* name, Inspectable* i);
+	virtual void readonly(const char* name, Inspectable* i);
 	
-	virtual void editable(Magnum::SceneGraph::AbstractObject2D& i) { editableObject(i); }
-	virtual void readonly(Magnum::SceneGraph::AbstractObject2D& i) { readonlyObject(i); }
-	virtual void editable(Magnum::SceneGraph::AbstractObject3D& i) { editableObject(i); }
-	virtual void readonly(Magnum::SceneGraph::AbstractObject3D& i) { readonlyObject(i); }
+	virtual void editable(const char* name, Magnum::SceneGraph::AbstractObject2D& i) { editableObject(name, i); }
+	virtual void readonly(const char* name, Magnum::SceneGraph::AbstractObject2D& i) { readonlyObject(name, i); }
+	virtual void editable(const char* name, Magnum::SceneGraph::AbstractObject3D& i) { editableObject(name, i); }
+	virtual void readonly(const char* name, Magnum::SceneGraph::AbstractObject3D& i) { readonlyObject(name, i); }
 	
-	virtual void editable(Magnum::SceneGraph::AbstractFeature2D& i) { editableFeature(i); }
-	virtual void readonly(Magnum::SceneGraph::AbstractFeature2D& i) { readonlyFeature(i); }
-	virtual void editable(Magnum::SceneGraph::AbstractFeature3D& i) { editableFeature(i); }
-	virtual void readonly(Magnum::SceneGraph::AbstractFeature3D& i) { readonlyFeature(i); }
+	virtual void editable(const char* name, Magnum::SceneGraph::AbstractFeature2D& i) { editableFeature(name, i); }
+	virtual void readonly(const char* name, Magnum::SceneGraph::AbstractFeature2D& i) { readonlyFeature(name, i); }
+	virtual void editable(const char* name, Magnum::SceneGraph::AbstractFeature3D& i) { editableFeature(name, i); }
+	virtual void readonly(const char* name, Magnum::SceneGraph::AbstractFeature3D& i) { readonlyFeature(name, i); }
 	
 protected:
     GtkChildPopulator childPopulator;
@@ -75,15 +75,15 @@ protected:
 	
 private:
 	template<uint Dimensions, typename ValueType>
-	void editableObject(Magnum::SceneGraph::AbstractObject<Dimensions, ValueType>& object);
+	void editableObject(const char* name, Magnum::SceneGraph::AbstractObject<Dimensions, ValueType>& object);
 	template<uint Dimensions, typename ValueType>
-	void readonlyObject(Magnum::SceneGraph::AbstractObject<Dimensions, ValueType>& object);
+	void readonlyObject(const char* name, Magnum::SceneGraph::AbstractObject<Dimensions, ValueType>& object);
 	
 	template<uint Dimensions, typename ValueType>
-	void editableFeature(Magnum::SceneGraph::AbstractFeature<Dimensions, ValueType>& feature);
+	void editableFeature(const char* name, Magnum::SceneGraph::AbstractFeature<Dimensions, ValueType>& feature);
 	
 	template<uint Dimensions, typename ValueType>
-	void readonlyFeature(Magnum::SceneGraph::AbstractFeature<Dimensions, ValueType>& feature);
+	void readonlyFeature(const char* name, Magnum::SceneGraph::AbstractFeature<Dimensions, ValueType>& feature);
 	
 
 	template<typename ValueType>

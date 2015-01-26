@@ -105,7 +105,7 @@ void GtkInspector<SceneGraphObject>::setupDetails(SceneGraphObject* node)
 		detailNode = node;
 	}
 	if (node) {
-		editable(*node);
+		editable("Node", *node);
 	}
 	else {
 		for (auto& child : detailsPane->get_children()) {

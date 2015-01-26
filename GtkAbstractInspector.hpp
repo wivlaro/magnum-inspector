@@ -83,11 +83,13 @@ inline std::string getNameAndType(T& object) {
 }
 
 template<uint Dimensions, typename ValueType>
-inline void GtkAbstractInspector::editableObject(Magnum::SceneGraph::AbstractObject<Dimensions, ValueType>& object) {
+inline void GtkAbstractInspector::editableObject(const char* name, Magnum::SceneGraph::AbstractObject<Dimensions, ValueType>& object) {
 	typedef Magnum::SceneGraph::AbstractObject<Dimensions, ValueType> ObjectType;
 	{
 		auto& frame = childPopulator.ensureChild<GtkObjectFrame>();
-		frame.set_label(getNameAndType(object));
+		std::string label = getNameAndType(object);
+		if (name && strlen(name)) label = std::string(name) + ": " + label;
+		frame.set_label(label);
 		frame.childPopulator.reset();
 		frame.Inspector::readonly("Matrix", object.transformationMatrix());
 		if (auto* inspectable = dynamic_cast<Inspectable*>(&object)) {
@@ -98,7 +100,9 @@ inline void GtkAbstractInspector::editableObject(Magnum::SceneGraph::AbstractObj
 	for (auto feature = object.features().first(); feature; feature = feature->nextFeature()) {
 		if (dynamic_cast<ObjectType*>(feature) == &object) continue;
 		auto& frame = childPopulator.ensureChild<GtkObjectFrame>();
-		frame.set_label(getNameAndType(*feature));
+		std::string label = getNameAndType(*feature);
+		if (name && strlen(name)) label = std::string(name) + ": " + label;
+		frame.set_label(label);
 		frame.childPopulator.reset();
 		if (auto* inspectable = dynamic_cast<Inspectable*>(feature)) {
 			inspectable->onInspect(frame);
@@ -107,11 +111,13 @@ inline void GtkAbstractInspector::editableObject(Magnum::SceneGraph::AbstractObj
 	}
 }
 template<uint Dimensions, typename ValueType>
-inline void GtkAbstractInspector::readonlyObject(Magnum::SceneGraph::AbstractObject<Dimensions, ValueType>& object) {
+inline void GtkAbstractInspector::readonlyObject(const char* name, Magnum::SceneGraph::AbstractObject<Dimensions, ValueType>& object) {
 	typedef Magnum::SceneGraph::AbstractObject<Dimensions, ValueType> ObjectType;
 	{
 		auto& frame = childPopulator.ensureChild<GtkObjectFrame>();
-		frame.set_label(getNameAndType(object));
+		std::string label = getNameAndType(object);
+		if (name && strlen(name)) label = std::string(name) + ": " + label;
+		frame.set_label(label);
 		frame.childPopulator.reset();
 		frame.Inspector::readonly("Matrix", object.transformationMatrix());
 		if (auto* inspectable = dynamic_cast<Inspectable*>(&object)) {
@@ -122,7 +128,9 @@ inline void GtkAbstractInspector::readonlyObject(Magnum::SceneGraph::AbstractObj
 	for (auto feature = object.features().first(); feature; feature = feature->nextFeature()) {
 		if (dynamic_cast<ObjectType*>(feature) == &object) continue;
 		auto& frame = childPopulator.ensureChild<GtkObjectFrame>();
-		frame.set_label(getNameAndType(*feature));
+		std::string label = getNameAndType(*feature);
+		if (name && strlen(name)) label = std::string(name) + ": " + label;
+		frame.set_label(label);
 		frame.childPopulator.reset();
 		if (auto* inspectable = dynamic_cast<Inspectable*>(feature)) {
 			inspectable->onInspect(frame);
@@ -132,9 +140,11 @@ inline void GtkAbstractInspector::readonlyObject(Magnum::SceneGraph::AbstractObj
 }
 
 template<uint Dimensions, typename ValueType>
-inline void GtkAbstractInspector::editableFeature(Magnum::SceneGraph::AbstractFeature<Dimensions, ValueType>& feature) {
+inline void GtkAbstractInspector::editableFeature(const char* name, Magnum::SceneGraph::AbstractFeature<Dimensions, ValueType>& feature) {
 	auto& frame = childPopulator.ensureChild<GtkObjectFrame>();
-	frame.set_label(getNameAndType(feature));
+	std::string label = getNameAndType(feature);
+	if (name && strlen(name)) label = std::string(name) + ": " + label;
+	frame.set_label(label);
 	frame.childPopulator.reset();
 	if (auto* inspectable = dynamic_cast<Inspectable*>(&feature)) {
 		inspectable->onInspect(frame);
@@ -143,9 +153,11 @@ inline void GtkAbstractInspector::editableFeature(Magnum::SceneGraph::AbstractFe
 }
 
 template<uint Dimensions, typename ValueType>
-inline void GtkAbstractInspector::readonlyFeature(Magnum::SceneGraph::AbstractFeature<Dimensions, ValueType>& feature) {
+inline void GtkAbstractInspector::readonlyFeature(const char* name, Magnum::SceneGraph::AbstractFeature<Dimensions, ValueType>& feature) {
 	auto& frame = childPopulator.ensureChild<GtkObjectFrame>();
-	frame.set_label(getNameAndType(feature));
+	std::string label = getNameAndType(feature);
+	if (name && strlen(name)) label = std::string(name) + ": " + label;
+	frame.set_label(label);
 	frame.childPopulator.reset();
 	if (auto* inspectable = dynamic_cast<Inspectable*>(&feature)) {
 		inspectable->onInspect(frame);
@@ -153,20 +165,24 @@ inline void GtkAbstractInspector::readonlyFeature(Magnum::SceneGraph::AbstractFe
 	frame.childPopulator.pruneRemaining();
 }
 
-inline void GtkAbstractInspector::editable(Inspectable* i) {
+inline void GtkAbstractInspector::editable(const char* name, Inspectable* i) {
 	if (!i) return;
 	auto& frame = childPopulator.ensureChild<GtkObjectFrame>();
 	frame.childPopulator.reset();
-	frame.set_label(i->getName() + " (" + demangle(typeid(*i).name()) + ")");
+	std::string label = i->getName() + " (" + demangle(typeid(*i).name()) + ")";
+	if (name && strlen(name)) label = std::string(name) + ": " + label;
+	frame.set_label(label);
 	i->onInspect(frame);
 	frame.childPopulator.pruneRemaining();
 }
 
-inline void GtkAbstractInspector::readonly(Inspectable* i) {
+inline void GtkAbstractInspector::readonly(const char* name, Inspectable* i) {
 	if (!i) return;
 	auto& frame = childPopulator.ensureChild<GtkObjectFrame>();
 	frame.childPopulator.reset();
-	frame.set_label(i->getName() + " (" + demangle(typeid(*i).name()) + ")");
+	std::string label = i->getName() + " (" + demangle(typeid(*i).name()) + ")";
+	if (name && strlen(name)) label = std::string(name) + ": " + label;
+	frame.set_label(label);
 	i->onInspect(frame);
 	frame.childPopulator.pruneRemaining();
 }

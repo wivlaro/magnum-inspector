@@ -2,6 +2,9 @@
 
 
 #include <memory>
+#include <map>
+#include <vector>
+#include <set>
 #ifdef MAGNUMINSPECTOR_BOOST
 #include <boost/weak_ptr.hpp>
 #endif
@@ -81,29 +84,69 @@ public:
 	virtual void editable(const char* name, Magnum::Quaternion& i) { editable(name, i.vector().data(), 4u, 1u); }
 	virtual void readonly(const char* name, const Magnum::Quaternion& i) { readonly(name, i.vector().data(), 4u, 1u); }
 	
-	virtual void editable(Inspectable* i) = 0;
-	virtual void readonly(Inspectable* i) = 0;
+	virtual void editable(const char* name, Inspectable* i) = 0;
+	virtual void readonly(const char* name, Inspectable* i) = 0;
 	
-	virtual void editable(Magnum::SceneGraph::AbstractObject2D& i) = 0;
-	virtual void readonly(Magnum::SceneGraph::AbstractObject2D& i) = 0;
-	virtual void editable(Magnum::SceneGraph::AbstractObject3D& i) = 0;
-	virtual void readonly(Magnum::SceneGraph::AbstractObject3D& i) = 0;
-	virtual void editable(Magnum::SceneGraph::AbstractFeature2D& i) = 0;
-	virtual void readonly(Magnum::SceneGraph::AbstractFeature2D& i) = 0;
-	virtual void editable(Magnum::SceneGraph::AbstractFeature3D& i) = 0;
-	virtual void readonly(Magnum::SceneGraph::AbstractFeature3D& i) = 0;
+	virtual void editable(const char* name, Magnum::SceneGraph::AbstractObject2D& i) = 0;
+	virtual void readonly(const char* name, Magnum::SceneGraph::AbstractObject2D& i) = 0;
+	virtual void editable(const char* name, Magnum::SceneGraph::AbstractObject3D& i) = 0;
+	virtual void readonly(const char* name, Magnum::SceneGraph::AbstractObject3D& i) = 0;
+	virtual void editable(const char* name, Magnum::SceneGraph::AbstractFeature2D& i) = 0;
+	virtual void readonly(const char* name, Magnum::SceneGraph::AbstractFeature2D& i) = 0;
+	virtual void editable(const char* name, Magnum::SceneGraph::AbstractFeature3D& i) = 0;
+	virtual void readonly(const char* name, Magnum::SceneGraph::AbstractFeature3D& i) = 0;
     
 	static std::string demangle(const char* name);
+	
+    template<typename K, typename V>
+    void editable(const char* name, std::map<K,V>& target) {
+		for (auto& kv : target) editable((std::string(name) + "[" + std::to_string(kv.first) + "]").c_str(), kv.second);
+    }
+	
+    template<typename K, typename V>
+    void readonly(const char* name, std::map<K,V>& target) {
+		for (auto& kv : target) readonly((std::string(name) + "[" + std::to_string(kv.first) + "]").c_str(), kv.second);
+    }
+	
+    template<typename T>
+    void editable(const char* name, std::vector<T>& target) {
+		for (size_t i = 0; i < target.size(); i++) editable((std::string(name) + "[" + std::to_string(i) + "]").c_str(), target[i]);
+    }
+	
+    template<typename T>
+    void readonly(const char* name, std::vector<T>& target) {
+		for (size_t i = 0; i < target.size(); i++) readonly((std::string(name) + "[" + std::to_string(i) + "]").c_str(), target[i]);
+    }
+	
+    template<typename V>
+    void editable(const char* name, std::set<V>& target) {
+		for (V& v : target) editable(name, v);
+    }
+	
+    template<typename V>
+    void readonly(const char* name, std::set<V>& target) {
+		for (V& v : target) readonly(name, v);
+    }
  
 #ifdef MAGNUMINSPECTOR_BOOST
     template<typename T>
     void editable(const char* name, boost::weak_ptr<T>& target) {
-        if (auto actual = target.lock()) editable(actual.get());
+        if (auto actual = target.lock()) editable(name, actual.get());
     }
 	
     template<typename T>
     void readonly(const char* name, boost::weak_ptr<T>& target) {
-        if (auto actual = target.lock()) readonly(actual.get());
+        if (auto actual = target.lock()) readonly(name, actual.get());
+    }
+    
+    template<typename T>
+    void editable(const char* name, boost::shared_ptr<T>& target) {
+        if (auto actual = target.get()) editable(name, actual);
+    }
+	
+    template<typename T>
+    void readonly(const char* name, boost::shared_ptr<T>& target) {
+        if (auto actual = target.get()) readonly(name, actual);
     }
 #endif
 };
