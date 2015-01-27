@@ -117,16 +117,6 @@ public:
     void readonly(const char* name, std::vector<T>& target) {
 		for (size_t i = 0; i < target.size(); i++) readonly((std::string(name) + "[" + std::to_string(i) + "]").c_str(), target[i]);
     }
-	
-    template<typename V>
-    void editable(const char* name, std::set<V>& target) {
-		for (V& v : target) editable(name, v);
-    }
-	
-    template<typename V>
-    void readonly(const char* name, std::set<V>& target) {
-		for (V& v : target) readonly(name, v);
-    }
  
 #ifdef MAGNUMINSPECTOR_BOOST
     template<typename T>
