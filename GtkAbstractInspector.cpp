@@ -81,6 +81,14 @@ void GtkAbstractInspector::editable(const char* name, bool& f)
 	});
 }
 
+template void GtkAbstractInspector::readonlyInteger<char>(const char *name, const char &i);
+template void GtkAbstractInspector::readonlyInteger<unsigned char>(const char *name, const unsigned char &i);
+template void GtkAbstractInspector::readonlyInteger<short>(const char *name, const short &i);
+template void GtkAbstractInspector::readonlyInteger<unsigned short>(const char *name, const unsigned short &i);
+template void GtkAbstractInspector::readonlyInteger<int>(const char *name, const int &i);
+template void GtkAbstractInspector::readonlyInteger<unsigned int>(const char *name, const unsigned int &i);
+template void GtkAbstractInspector::readonlyInteger<long>(const char *name, const long &i);
+template void GtkAbstractInspector::readonlyInteger<unsigned long>(const char *name, const unsigned long &i);
 	
 
 }
