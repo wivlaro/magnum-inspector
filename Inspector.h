@@ -81,7 +81,7 @@ public:
 	virtual void readonly(const char* name, const Magnum::Matrix3& i) { readonly(name, i.data(), 3u, 3u); }
 	
 	
-	virtual void editable(const char* name, Magnum::Quaternion& i) { editable(name, i.vector().data(), 4u, 1u); }
+	virtual void editable(const char* name, Magnum::Quaternion& i) { readonly(name, i.vector().data(), 4u, 1u); }
 	virtual void readonly(const char* name, const Magnum::Quaternion& i) { readonly(name, i.vector().data(), 4u, 1u); }
 	
 	virtual void editable(const char* name, Inspectable* i) = 0;
