@@ -87,6 +87,7 @@ void GtkInspector<SceneGraphObject>::init()
 	scrollPane = Gtk::manage(new Gtk::ScrolledWindow());
 	scrollPane->add(*detailsPane);
 	paneSplit->add2(*scrollPane);
+	paneSplit->set_position(100);
 	
 	mainBox->pack_end(*paneSplit);
 	
