@@ -28,3 +28,5 @@ if(Boost_FOUND)
 endif()
 
 set(MAGNUMINSPECTOR_LIBRARIES ${GTK3_LIBRARIES})
+
+add_definitions(-DMAGNUMINSPECTOR)

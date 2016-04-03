@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Inspector.h"
+#include "forwarddeclarations.h"
 #include <string>
 
 namespace MagnumInspector {
