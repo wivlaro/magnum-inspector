@@ -1,6 +1,8 @@
 
 #include "Inspectable.h"
 #include "Inspector.h"
+#include <sstream>
+#include <iomanip>
 
 #if defined(__GNUG__)
 #define HAS_RTTI
@@ -17,11 +19,10 @@
 namespace MagnumInspector {
 
 std::string Inspectable::getName() const {
-	std::string name = std::to_string(intptr_t(this));
-#ifdef HAS_RTTI
-	name = std::string(typeid(this).name()) + "@" + name;
-#endif
-	return name;
+
+	std::ostringstream name;
+	name << std::hex << intptr_t(this) << " (" << Inspector::demangle(typeid(*this).name()) << ")";
+	return name.str();
 }
 	
 	

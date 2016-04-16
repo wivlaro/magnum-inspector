@@ -72,14 +72,14 @@ inline void ensure_active(WidgetType& w, ValueType v) {
 template<typename T>
 inline std::string getNameAndType(T& object) {
 	auto inspectable = dynamic_cast<Inspectable*>(&object);
-	std::string name;
+	std::ostringstream name;
 	if (inspectable) {
-		name = inspectable->getName();
+		name << inspectable->getName();
 	}
 	else {
-		name = std::to_string(intptr_t(&object));
+		name << std::hex << intptr_t(&object) << " (" << Inspector::demangle(typeid(object).name()) << ")";
 	}
-	return name + " (" + Inspector::demangle(typeid(object).name()) + ")";
+	return name.str();
 }
 
 template<uint Dimensions, typename ValueType>
