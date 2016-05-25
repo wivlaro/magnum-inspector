@@ -9,6 +9,8 @@
 
 namespace MagnumInspector {
 
+class InspectorNode;
+
 class GtkAbstractInspector : public Inspector
 {
 public:
@@ -61,7 +63,10 @@ public:
 	virtual void readonly(const char* name, Magnum::SceneGraph::AbstractFeature2D& i) { readonlyFeature(name, i); }
 	virtual void editable(const char* name, Magnum::SceneGraph::AbstractFeature3D& i) { editableFeature(name, i); }
 	virtual void readonly(const char* name, Magnum::SceneGraph::AbstractFeature3D& i) { readonlyFeature(name, i); }
-	
+
+	virtual void editable(const char* name, InspectorNode& i);
+	virtual void readonly(const char* name, InspectorNode& i);
+
 protected:
     GtkChildPopulator childPopulator;
 	

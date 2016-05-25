@@ -18,8 +18,8 @@
 namespace MagnumInspector {
 	
 class GtkInspectorNode;
-	
-template<class SceneGraphObject>
+class InspectorNode;
+
 class GtkInspector	: public GtkAbstractInspector
 {
 public:
@@ -28,12 +28,12 @@ public:
 	
 	void init();
 	
-	bool update(SceneGraphObject* node);
+	bool update(InspectorNode* node);
 	
 	bool refreshNextFrame;
 	
 protected:
-    Glib::ustring getNodeName(SceneGraphObject& node);
+    Glib::ustring getNodeName(InspectorNode& node);
 	
 private:
 		
@@ -41,7 +41,7 @@ private:
 	{
 	public:
 		Gtk::TreeModelColumn<Glib::ustring> name;
-		Gtk::TreeModelColumn<SceneGraphObject*> pointer;
+		Gtk::TreeModelColumn<std::weak_ptr<InspectorNode>> pointer;
 		MyModelColumns() { add(name); add(pointer); }
 	};
 
@@ -57,14 +57,14 @@ private:
 	Gtk::TreeView* treeView;
 	Glib::RefPtr<Gtk::TreeStore> treeStore;
     Gtk::Box* detailsPane;
-	SceneGraphObject* detailNode;
+	std::weak_ptr<InspectorNode> detailNode;
     Gtk::Label* detailNodeLabel;
 	
-	void updateChildren(SceneGraphObject& node, const Gtk::TreeNodeChildren& children);
-	void updateNode(SceneGraphObject& node, const Gtk::TreeRow& row);
+	void updateChildren(InspectorNode& node, const Gtk::TreeNodeChildren& children);
+	void updateNode(InspectorNode& node, const Gtk::TreeRow& row);
 	
-	void setRoot(SceneGraphObject* node);
-    void setupDetails(SceneGraphObject* node);
+	void setRoot(InspectorNode* node);
+    void setupDetails(InspectorNode* node);
     void updateDetailNode();
     void addInspectableFields(Gtk::Box* box, MagnumInspector::Inspectable* arg2);
 		

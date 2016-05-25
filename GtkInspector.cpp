@@ -1,45 +1,32 @@
 
-#pragma once
-
 #include "GtkInspector.h"
 
-#include <gtkmm/box.h>
 #include <gtkmm/paned.h>
 #include <gtkmm/frame.h>
 #include <gtkmm/scrolledwindow.h>
 #include <gtkmm/spinbutton.h>
-#include <gtkmm/entry.h>
 #include <gtkmm/grid.h>
-#include <Magnum/SceneGraph/Scene.h>
 #include <iostream>
-#include <sstream>
 
-#include "Inspectable.h"
-#include <Magnum/Magnum.h>
-#include <Magnum/SceneGraph/Object.h>
-#include <Magnum/SceneGraph/Scene.h>
-#include <Magnum/SceneGraph/MatrixTransformation3D.h>
-#include "GtkChildPopulator.h"
+#include "InspectorNode.h"
 
 
 namespace MagnumInspector {
 
-template <class SceneGraphObject>
-GtkInspector<SceneGraphObject>::GtkInspector()
+GtkInspector::GtkInspector()
 :	refreshNextFrame(true)
 ,	gtkMain(nullptr)
 ,	window(nullptr)
 ,	refreshButton(nullptr)
 ,	autoRefreshToggle(nullptr)
-,	detailNode(nullptr)
+,	detailNode()
 ,	detailNodeLabel(nullptr)
 {
 	std::cout << "GtkInspector::GtkInspector\n";
 
 }
 
-template <class SceneGraphObject>
-GtkInspector<SceneGraphObject>::~GtkInspector()
+GtkInspector::~GtkInspector()
 {
 	std::cout << "GtkInspector::~GtkInspector\n";
 	
@@ -47,8 +34,7 @@ GtkInspector<SceneGraphObject>::~GtkInspector()
 	delete gtkMain;
 }
 
-template <class SceneGraphObject>
-void GtkInspector<SceneGraphObject>::init()
+void GtkInspector::init()
 {
 	std::cout << "GtkInspector::init\n";
 	gtkMain = new Gtk::Main();
@@ -75,7 +61,9 @@ void GtkInspector<SceneGraphObject>::init()
 	treeView->append_column("Name", columns.name);
 	treeView->get_selection()->signal_changed().connect([&] {
 		auto selectedIt = treeView->get_selection()->get_selected();
-		setupDetails(selectedIt->get_value(columns.pointer));
+		if (auto details = selectedIt->get_value(columns.pointer).lock()) {
+			setupDetails(details.get());
+		}
 	});
 	
 	detailsPane = new Gtk::Box(Gtk::ORIENTATION_VERTICAL);
@@ -95,15 +83,14 @@ void GtkInspector<SceneGraphObject>::init()
 	window->show_all();
 }
 
-template <class SceneGraphObject>
-void GtkInspector<SceneGraphObject>::setupDetails(SceneGraphObject* node)
+void GtkInspector::setupDetails(InspectorNode* node)
 {
-	
 	childPopulator.setContainer(detailsPane);
 	childPopulator.reset();
-	if (detailNode != node) {
+	auto detailNode = this->detailNode.lock();
+	if (detailNode != node->shared_from_this()) {
 		childPopulator.pruneRemaining();
-		detailNode = node;
+		this->detailNode = node->shared_from_this();
 	}
 	if (node) {
 		editable("Node", *node);
@@ -117,8 +104,7 @@ void GtkInspector<SceneGraphObject>::setupDetails(SceneGraphObject* node)
 // 	detailsPane->show_all();
 }
 
-template <class SceneGraphObject>
-void GtkInspector<SceneGraphObject>::setRoot(SceneGraphObject* node)
+void GtkInspector::setRoot(InspectorNode* node)
 {
 	if (node) {
 		updateChildren(*node, treeStore->children());
@@ -128,11 +114,12 @@ void GtkInspector<SceneGraphObject>::setRoot(SceneGraphObject* node)
 	}
 }
 
-template <class SceneGraphObject>
-void GtkInspector<SceneGraphObject>::updateChildren(SceneGraphObject& node, const Gtk::TreeNodeChildren& dstChildren) 
+void GtkInspector::updateChildren(InspectorNode& node, const Gtk::TreeNodeChildren& dstChildren)
 {
 	auto dstIt = dstChildren.begin();
-	for (auto srcChild = node.children().first(); srcChild; srcChild = srcChild->nextSibling()) {
+	static std::vector<InspectorNode*> children;
+	node.getChildren(children);
+	for (auto srcChild : children) {
 		if (dstIt == dstChildren.end()) {
 			dstIt = treeStore->append(dstChildren);
 		}
@@ -142,10 +129,10 @@ void GtkInspector<SceneGraphObject>::updateChildren(SceneGraphObject& node, cons
 	while (dstIt != dstChildren.end()) {
 		dstIt = treeStore->erase(dstIt);
 	}
+	children.clear();
 }
 
-template <class SceneGraphObject>
-Glib::ustring GtkInspector<SceneGraphObject>::getNodeName(SceneGraphObject& node)
+Glib::ustring GtkInspector::getNodeName(InspectorNode& node)
 {
 	std::string name;
 	auto entity = dynamic_cast<Inspectable*>(&node);
@@ -159,16 +146,16 @@ Glib::ustring GtkInspector<SceneGraphObject>::getNodeName(SceneGraphObject& node
 }
 
 
-template <class SceneGraphObject>
-void GtkInspector<SceneGraphObject>::updateNode(SceneGraphObject& node, const Gtk::TreeRow& row)
+void GtkInspector::updateNode(InspectorNode& node, const Gtk::TreeRow& row)
 {
-	if (row.get_value(columns.pointer) != &node || updateNamesToggle->get_active()) {
+	auto shouldUpdate = updateNamesToggle->get_active() || row.get_value(columns.pointer).lock() != node.shared_from_this();
+	if (shouldUpdate) {
 		row.set_value(columns.name, getNodeName(node));
-		row.set_value(columns.pointer, &node);
+		row.set_value(columns.pointer, std::weak_ptr<InspectorNode>(node.shared_from_this()));
 	}
-	
-	if (&node == detailNode) {
-		setupDetails(detailNode);
+	auto detailNode = this->detailNode.lock();
+	if (detailNode == node.shared_from_this()) {
+		setupDetails(&node);
 	}
 	
 	updateChildren(node, row.children());
@@ -176,8 +163,7 @@ void GtkInspector<SceneGraphObject>::updateNode(SceneGraphObject& node, const Gt
 
 
 
-template <class SceneGraphObject>
-bool GtkInspector<SceneGraphObject>::update(SceneGraphObject* node)
+bool GtkInspector::update(InspectorNode* node)
 {
 // 	std::cout << "GtkInspector::update\n";
 	if (autoRefreshToggle->get_active() || refreshNextFrame) {

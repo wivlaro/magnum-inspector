@@ -1,6 +1,7 @@
 
 namespace MagnumInspector {
-	template<class SceneGraphObject> class GtkInspector;
+	class GtkInspector;
 	class Inspector;
+	class InspectorNode;
 	class Inspectable;
 }
