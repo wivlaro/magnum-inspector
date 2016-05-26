@@ -8,7 +8,7 @@
 #include <gtkmm/grid.h>
 #include <iostream>
 
-#include "InspectorNode.h"
+#include "Inspectable.h"
 
 
 namespace MagnumInspector {
@@ -38,10 +38,10 @@ GtkInspector::~GtkInspector()
 	
 void GtkInspector::clearWeakPointers(const Gtk::TreeNodeChildren& children) {
 	for (auto child : children) {
-		auto ptr = child.get_value(columns.pointer);
-		if (ptr) {
-			ptr->reset();
-		}
+//		auto ptr = child.get_value(columns.pointer);
+//		if (ptr) {
+//			ptr->reset();
+//		}
 		clearWeakPointers(child->children());
 	}
 }
@@ -73,11 +73,9 @@ void GtkInspector::init()
 	treeView->append_column("Name", columns.name);
 	treeView->get_selection()->signal_changed().connect([&] {
 		auto selectedIt = treeView->get_selection()->get_selected();
-		auto weakRefPointer = selectedIt->get_value(columns.pointer);
-		if (weakRefPointer) {
-			if (auto details = weakRefPointer->lock()) {
-				setupDetails(details.get());
-			}
+		auto node = selectedIt->get_value(columns.pointer);
+		if (node.get()) {
+			setupDetails(node.get());
 		}
 	});
 	
@@ -98,17 +96,22 @@ void GtkInspector::init()
 	window->show_all();
 }
 
-void GtkInspector::setupDetails(InspectorNode* node)
+void GtkInspector::setupDetails(Inspectable *node)
 {
 	childPopulator.setContainer(detailsPane);
 	childPopulator.reset();
-	auto detailNode = this->detailNode.lock();
-	if (detailNode != node->shared_from_this()) {
+	if (detailNode != node) {
 		childPopulator.pruneRemaining();
-		this->detailNode = node->shared_from_this();
+		if (detailNode) {
+			detailNode->removeDestroyListener(this);
+		}
+		detailNode = node;
+		if (detailNode) {
+			detailNode->addDestroyListener(this);
+		}
 	}
 	if (node) {
-		editable("Node", *node);
+		inspectAsMain("Node", *node);
 	}
 	else {
 		for (auto& child : detailsPane->get_children()) {
@@ -116,10 +119,15 @@ void GtkInspector::setupDetails(InspectorNode* node)
 		}
 	}
 	childPopulator.pruneRemaining();
-// 	detailsPane->show_all();
 }
 
-void GtkInspector::setRoot(InspectorNode* node)
+void GtkInspector::onDestroy(Inspectable *node) {
+	if (node == detailNode) {
+		detailNode = nullptr;
+	}
+}
+
+void GtkInspector::setRoot(Inspectable* node)
 {
 	if (node) {
 		updateChildren(*node, treeStore->children());
@@ -129,15 +137,16 @@ void GtkInspector::setRoot(InspectorNode* node)
 	}
 }
 
-void GtkInspector::updateChildren(InspectorNode& node, const Gtk::TreeNodeChildren& dstChildren)
+void GtkInspector::updateChildren(Inspectable& node, const Gtk::TreeNodeChildren& dstChildren)
 {
 	auto dstIt = dstChildren.begin();
-	static std::vector<InspectorNode*> children;
+	static std::vector<Inspectable*> children;
+	children.clear();
 	node.getChildren(children);
 	for (auto srcChild : children) {
 		if (dstIt == dstChildren.end()) {
 			dstIt = treeStore->append(dstChildren);
-			dstIt->set_value(columns.pointer, std::weak_ptr<InspectorNode>());
+			dstIt->set_value(columns.pointer, InspectableWeakRef(&node));
 		}
 		updateNode(*srcChild, *dstIt);
 		++dstIt;
@@ -148,7 +157,7 @@ void GtkInspector::updateChildren(InspectorNode& node, const Gtk::TreeNodeChildr
 	children.clear();
 }
 
-Glib::ustring GtkInspector::getNodeName(InspectorNode& node)
+Glib::ustring GtkInspector::getNodeName(Inspectable& node)
 {
 	std::string name;
 	auto entity = dynamic_cast<Inspectable*>(&node);
@@ -162,17 +171,16 @@ Glib::ustring GtkInspector::getNodeName(InspectorNode& node)
 }
 
 
-void GtkInspector::updateNode(InspectorNode& node, const Gtk::TreeRow& row)
+void GtkInspector::updateNode(Inspectable& node, const Gtk::TreeRow& row)
 {
-	auto weakRefPointer = row.get_value(columns.pointer);
-	auto shouldUpdate = updateNamesToggle->get_active() || !weakRefPointer || weakRefPointer->lock() != node.shared_from_this();
+	auto weakRef = row.get_value(columns.pointer);
+	auto shouldUpdate = updateNamesToggle->get_active() || weakRef.get() != &node;
 	if (shouldUpdate) {
 		row.set_value(columns.name, getNodeName(node));
-		row.set_value(columns.pointer, new std::weak_ptr<InspectorNode>(node.shared_from_this()));
+		row.set_value(columns.pointer, InspectableWeakRef(&node));
 	}
-	auto detailNode = this->detailNode.lock();
-	if (detailNode == node.shared_from_this()) {
-		setupDetails(&node);
+	if (detailNode == &node) {
+		setupDetails(detailNode);
 	}
 	
 	updateChildren(node, row.children());
@@ -180,7 +188,7 @@ void GtkInspector::updateNode(InspectorNode& node, const Gtk::TreeRow& row)
 
 
 
-bool GtkInspector::update(InspectorNode* node)
+bool GtkInspector::update(Inspectable* node)
 {
 // 	std::cout << "GtkInspector::update\n";
 	if (autoRefreshToggle->get_active() || refreshNextFrame) {
@@ -199,3 +207,4 @@ bool GtkInspector::update(InspectorNode* node)
 
 
 }
+

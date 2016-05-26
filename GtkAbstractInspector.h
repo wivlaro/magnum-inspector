@@ -64,8 +64,7 @@ public:
 	virtual void editable(const char* name, Magnum::SceneGraph::AbstractFeature3D& i) { editableFeature(name, i); }
 	virtual void readonly(const char* name, Magnum::SceneGraph::AbstractFeature3D& i) { readonlyFeature(name, i); }
 
-	virtual void editable(const char* name, InspectorNode& i);
-	virtual void readonly(const char* name, InspectorNode& i);
+	virtual void inspectAsMain(const char* name, Inspectable& i);
 
 protected:
     GtkChildPopulator childPopulator;

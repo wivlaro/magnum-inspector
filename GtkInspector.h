@@ -17,10 +17,7 @@
 
 namespace MagnumInspector {
 	
-class GtkInspectorNode;
-class InspectorNode;
-
-class GtkInspector	: public GtkAbstractInspector
+class GtkInspector	: public GtkAbstractInspector, public Inspectable::DestroyListener
 {
 public:
     GtkInspector();
@@ -28,21 +25,87 @@ public:
 	
 	void init();
 	
-	bool update(InspectorNode* node);
+	bool update(Inspectable* node);
 	
 	bool refreshNextFrame;
 	
 protected:
-    Glib::ustring getNodeName(InspectorNode& node);
+    Glib::ustring getNodeName(Inspectable& node);
+
+	void onDestroy(Inspectable* ) override;
 	
 private:
+
+	class InspectableWeakRef : InspectableDestroyListener {
+	public:
+		InspectableWeakRef() {
+			target = nullptr;
+		}
+		InspectableWeakRef(Inspectable* newTarget) {
+			justSet(newTarget);
+		}
+
+		InspectableWeakRef(const InspectableWeakRef& newTarget) {
+			if (newTarget) {
+				justSet(newTarget.target);
+			}
+			else {
+				target = nullptr;
+			}
+		}
+		virtual ~InspectableWeakRef() {
+			unlisten();
+		}
+
+		void onDestroy(Inspectable* destroying) {
+			assert(target == destroying);
+			target = nullptr;
+		}
+
+		Inspectable* get() {
+			return target;
+		}
+
+		void clear() {
+			unlisten();
+			target = nullptr;
+		}
+
+		void set(Inspectable* newTarget) {
+			unlisten();
+			justSet(newTarget);
+		}
+		bool operator!() const {
+			return target == nullptr;
+		}
+		operator bool() const {
+			return target != nullptr;
+		}
+	private:
+		Inspectable* target;
+
+		void unlisten() {
+			if (target) {
+				target->removeDestroyListener(this);
+			}
+		}
+
+		void justSet(Inspectable *newTarget) {
+			target = newTarget;
+			target->addDestroyListener(this);
+		}
+
+	};
 		
 	class MyModelColumns : public Gtk::TreeModel::ColumnRecord
 	{
 	public:
 		Gtk::TreeModelColumn<Glib::ustring> name;
-		Gtk::TreeModelColumn<std::weak_ptr<InspectorNode>*> pointer;
-		MyModelColumns() { add(name); add(pointer); }
+		Gtk::TreeModelColumn<InspectableWeakRef> pointer;
+		MyModelColumns() {
+			add(name);
+			add(pointer);
+		}
 	};
 
 	MyModelColumns columns;
@@ -57,17 +120,18 @@ private:
 	Gtk::TreeView* treeView;
 	Glib::RefPtr<Gtk::TreeStore> treeStore;
     Gtk::Box* detailsPane;
-	std::weak_ptr<InspectorNode> detailNode;
+	Inspectable* detailNode;
     Gtk::Label* detailNodeLabel;
 	
-	void updateChildren(InspectorNode& node, const Gtk::TreeNodeChildren& children);
-	void updateNode(InspectorNode& node, const Gtk::TreeRow& row);
+	void updateChildren(Inspectable& node, const Gtk::TreeNodeChildren& children);
+	void updateNode(Inspectable& node, const Gtk::TreeRow& row);
 	
-	void setRoot(InspectorNode* node);
-    void setupDetails(InspectorNode* node);
+	void setRoot(Inspectable* node);
+    void setupDetails(Inspectable* node);
     void updateDetailNode();
     void addInspectableFields(Gtk::Box* box, MagnumInspector::Inspectable* arg2);
 	void clearWeakPointers(const Gtk::TreeNodeChildren&);
+	void unsetDetailNode(Inspectable* node);
 };
 
 

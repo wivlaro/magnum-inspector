@@ -6,7 +6,6 @@
 #include "GtkMatrixWidget.h"
 #include "GtkObjectFrame.h"
 #include "GtkAbstractInspector.hpp"
-#include "InspectorNode.h"
 #include <numeric>
 
 namespace MagnumInspector {
@@ -91,53 +90,21 @@ template void GtkAbstractInspector::readonlyInteger<unsigned int>(const char *na
 template void GtkAbstractInspector::readonlyInteger<long>(const char *name, const long &i);
 template void GtkAbstractInspector::readonlyInteger<unsigned long>(const char *name, const unsigned long &i);
 
-void GtkAbstractInspector::editable(const char* name, InspectorNode& object) {
+void GtkAbstractInspector::inspectAsMain(const char* name, Inspectable& object) {
 	{
 		auto& frame = childPopulator.ensureChild<GtkObjectFrame>();
-		std::string label;
-		object.getName(label);
+		std::string label = object.getName();
 		if (name && strlen(name)) label = std::string(name) + ": " + label;
 		frame.set_label(label);
 		frame.childPopulator.reset();
-		if (auto* inspectable = dynamic_cast<Inspectable*>(&object)) {
-			inspectable->onInspect(frame);
-		}
+		object.onInspect(frame);
 		frame.childPopulator.pruneRemaining();
 	}
 	{
 		static std::vector<Inspectable*> components;
 		object.getComponents(components);
 		for (auto component : components) {
-			if (component == nullptr || dynamic_cast<InspectorNode*>(component) == &object) continue;
-			auto& frame = childPopulator.ensureChild<GtkObjectFrame>();
-			std::string label = getNameAndType(*component);
-			if (name && strlen(name)) label = std::string(name) + ": " + label;
-			frame.set_label(label);
-			frame.childPopulator.reset();
-			component->onInspect(frame);
-			frame.childPopulator.pruneRemaining();
-		}
-		components.clear();
-	}
-}
-void GtkAbstractInspector::readonly(const char* name, InspectorNode& object) {
-	{
-		auto& frame = childPopulator.ensureChild<GtkObjectFrame>();
-		std::string label;
-		object.getName(label);
-		if (name && strlen(name)) label = std::string(name) + ": " + label;
-		frame.set_label(label);
-		frame.childPopulator.reset();
-		if (auto* inspectable = dynamic_cast<Inspectable*>(&object)) {
-			inspectable->onInspect(frame);
-		}
-		frame.childPopulator.pruneRemaining();
-	}
-	{
-		static std::vector<Inspectable*> components;
-		object.getComponents(components);
-		for (auto component : components) {
-			if (component == nullptr || dynamic_cast<InspectorNode*>(component) == &object) continue;
+			if (component == nullptr && component != &object) continue;
 			auto& frame = childPopulator.ensureChild<GtkObjectFrame>();
 			std::string label = getNameAndType(*component);
 			if (name && strlen(name)) label = std::string(name) + ": " + label;
