@@ -29,9 +29,21 @@ GtkInspector::GtkInspector()
 GtkInspector::~GtkInspector()
 {
 	std::cout << "GtkInspector::~GtkInspector\n";
+
+	clearWeakPointers(treeStore->children());
 	
 	delete window;
 	delete gtkMain;
+}
+	
+void GtkInspector::clearWeakPointers(const Gtk::TreeNodeChildren& children) {
+	for (auto child : children) {
+		auto ptr = child.get_value(columns.pointer);
+		if (ptr) {
+			ptr->reset();
+		}
+		clearWeakPointers(child->children());
+	}
 }
 
 void GtkInspector::init()
@@ -61,8 +73,11 @@ void GtkInspector::init()
 	treeView->append_column("Name", columns.name);
 	treeView->get_selection()->signal_changed().connect([&] {
 		auto selectedIt = treeView->get_selection()->get_selected();
-		if (auto details = selectedIt->get_value(columns.pointer).lock()) {
-			setupDetails(details.get());
+		auto weakRefPointer = selectedIt->get_value(columns.pointer);
+		if (weakRefPointer) {
+			if (auto details = weakRefPointer->lock()) {
+				setupDetails(details.get());
+			}
 		}
 	});
 	
@@ -122,6 +137,7 @@ void GtkInspector::updateChildren(InspectorNode& node, const Gtk::TreeNodeChildr
 	for (auto srcChild : children) {
 		if (dstIt == dstChildren.end()) {
 			dstIt = treeStore->append(dstChildren);
+			dstIt->set_value(columns.pointer, std::weak_ptr<InspectorNode>());
 		}
 		updateNode(*srcChild, *dstIt);
 		++dstIt;
@@ -148,10 +164,11 @@ Glib::ustring GtkInspector::getNodeName(InspectorNode& node)
 
 void GtkInspector::updateNode(InspectorNode& node, const Gtk::TreeRow& row)
 {
-	auto shouldUpdate = updateNamesToggle->get_active() || row.get_value(columns.pointer).lock() != node.shared_from_this();
+	auto weakRefPointer = row.get_value(columns.pointer);
+	auto shouldUpdate = updateNamesToggle->get_active() || !weakRefPointer || weakRefPointer->lock() != node.shared_from_this();
 	if (shouldUpdate) {
 		row.set_value(columns.name, getNodeName(node));
-		row.set_value(columns.pointer, std::weak_ptr<InspectorNode>(node.shared_from_this()));
+		row.set_value(columns.pointer, new std::weak_ptr<InspectorNode>(node.shared_from_this()));
 	}
 	auto detailNode = this->detailNode.lock();
 	if (detailNode == node.shared_from_this()) {

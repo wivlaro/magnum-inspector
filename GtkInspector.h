@@ -41,7 +41,7 @@ private:
 	{
 	public:
 		Gtk::TreeModelColumn<Glib::ustring> name;
-		Gtk::TreeModelColumn<std::weak_ptr<InspectorNode>> pointer;
+		Gtk::TreeModelColumn<std::weak_ptr<InspectorNode>*> pointer;
 		MyModelColumns() { add(name); add(pointer); }
 	};
 
@@ -67,7 +67,7 @@ private:
     void setupDetails(InspectorNode* node);
     void updateDetailNode();
     void addInspectableFields(Gtk::Box* box, MagnumInspector::Inspectable* arg2);
-		
+	void clearWeakPointers(const Gtk::TreeNodeChildren&);
 };
 
 
