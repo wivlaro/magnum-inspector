@@ -140,8 +140,7 @@ void GtkInspector::setRoot(Inspectable* node)
 void GtkInspector::updateChildren(Inspectable& node, const Gtk::TreeNodeChildren& dstChildren)
 {
 	auto dstIt = dstChildren.begin();
-	static std::vector<Inspectable*> children;
-	children.clear();
+	std::vector<Inspectable*> children;
 	node.getChildren(children);
 	for (auto srcChild : children) {
 		if (dstIt == dstChildren.end()) {

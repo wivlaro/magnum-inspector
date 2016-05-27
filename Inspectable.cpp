@@ -4,18 +4,6 @@
 #include <sstream>
 #include <iomanip>
 
-#if defined(__GNUG__)
-#define HAS_RTTI
-#elif defined(__has_feature)
-#if __has_feature(cxx_rtti)
-#define HAS_RTTI
-#endif
-#endif
-
-#ifdef HAS_RTTI
-#include <typeinfo>
-#endif
-
 namespace MagnumInspector {
 
 Inspectable::~Inspectable() {
@@ -23,11 +11,10 @@ Inspectable::~Inspectable() {
 		listener->onDestroy(this);
 	}
 }
-
-std::string Inspectable::getName() const {
-
+	
+std::string Inspectable::getDemangledNameFor(const void *ptr, const char *typenam)	{
 	std::ostringstream name;
-	name << std::hex << intptr_t(this) << " (" << Inspector::demangle(typeid(*this).name()) << ")";
+	name << std::hex << intptr_t(ptr) << " (" << Inspector::demangle(typenam) << ")";
 	return name.str();
 }
 

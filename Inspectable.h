@@ -6,6 +6,18 @@
 #include <functional>
 #include <forward_list>
 
+#if defined(__GNUG__)
+#define HAS_RTTI
+#elif defined(__has_feature)
+#if __has_feature(cxx_rtti)
+#define HAS_RTTI
+#endif
+#endif
+
+#ifdef HAS_RTTI
+#include <typeinfo>
+#endif
+
 namespace MagnumInspector {
 
 class InspectableDestroyListener {
@@ -20,11 +32,22 @@ public:
 	typedef InspectableDestroyListener DestroyListener;
 
 	virtual ~Inspectable();
-	virtual std::string getName() const;
+	
+	
+	static std::string getDemangledNameFor(const void* ptr, const char* typenam);
+	
+	template<typename T>
+	static std::string getNameFor(const T* ptr) {
+		return getDemangledNameFor(ptr, ptr ? typeid(*ptr).name() : typeid(T*).name());
+	}
+	
+	virtual std::string getName() const {
+		return getNameFor<Inspectable>(this);
+	}
 
 	virtual void getChildren(std::vector<Inspectable*>& children) {}
 	virtual void getComponents(std::vector<Inspectable*>& children) {}
-	virtual void onInspect(Inspector& inspector) {}
+	virtual void onInspect(Inspector& inspector) = 0;
 
 	void addDestroyListener(DestroyListener* listener);
 	void removeDestroyListener(DestroyListener* listener);
