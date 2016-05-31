@@ -47,7 +47,7 @@ public:
 
 	virtual void getChildren(std::vector<Inspectable*>& children) {}
 	virtual void getComponents(std::vector<Inspectable*>& children) {}
-	virtual void onInspect(Inspector& inspector) = 0;
+	virtual void onInspect(Inspector& inspector) {};
 
 	void addDestroyListener(DestroyListener* listener);
 	void removeDestroyListener(DestroyListener* listener);
