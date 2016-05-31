@@ -153,18 +153,13 @@ void GtkInspector::updateChildren(Inspectable& node, const Gtk::TreeNodeChildren
 	while (dstIt != dstChildren.end()) {
 		dstIt = treeStore->erase(dstIt);
 	}
-	children.clear();
 }
 
-Glib::ustring GtkInspector::getNodeName(Inspectable& node)
+Glib::ustring GtkInspector::getNodeName(Inspectable& entity)
 {
-	std::string name;
-	auto entity = dynamic_cast<Inspectable*>(&node);
-	if (entity) {
-		name = entity->getName();
-	}
+	std::string name = entity.getName();
 	if (name.empty()) {
-		name = std::to_string(intptr_t(&node));
+		name = std::to_string(intptr_t(&entity));
 	}
 	return name;
 }
