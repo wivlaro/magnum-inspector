@@ -73,7 +73,9 @@ protected:
     FieldValueWidget& addField(const char* name)
 	{
 		GtkInspectionField& field = childPopulator.ensureChild<GtkInspectionField>();
-		field.getLabel().set_text(name);
+		if (field.getLabel().get_text() != name) {
+			field.getLabel().set_text(name);
+		}
 		return field.ensureChild<FieldValueWidget>();
 	}
 	

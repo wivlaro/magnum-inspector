@@ -171,7 +171,9 @@ inline void GtkAbstractInspector::editable(const char* name, Inspectable* i) {
 	frame.childPopulator.reset();
 	std::string label = i->getName() + " (" + demangle(typeid(*i).name()) + ")";
 	if (name && strlen(name)) label = std::string(name) + ": " + label;
-	frame.set_label(label);
+	if (frame.get_label() != label) {
+		frame.set_label(label);
+	}
 	i->onInspect(frame);
 	frame.childPopulator.pruneRemaining();
 }
@@ -182,7 +184,9 @@ inline void GtkAbstractInspector::readonly(const char* name, Inspectable* i) {
 	frame.childPopulator.reset();
 	std::string label = i->getName() + " (" + demangle(typeid(*i).name()) + ")";
 	if (name && strlen(name)) label = std::string(name) + ": " + label;
-	frame.set_label(label);
+	if (frame.get_label() != label) {
+		frame.set_label(label);
+	}
 	i->onInspect(frame);
 	frame.childPopulator.pruneRemaining();
 }
