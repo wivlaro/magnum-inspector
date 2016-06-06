@@ -103,21 +103,18 @@ void GtkAbstractInspector::inspectAsMain(const char* name, Inspectable& object) 
 		frame.childPopulator.pruneRemaining();
 	}
 	{
-		static std::vector<Inspectable*> components;
-		object.getComponents(components);
-		for (auto component : components) {
-			if (component == nullptr && component != &object) continue;
+		object.getComponents([&](Inspectable& component) {
+			if (&component == &object) return;
 			auto& frame = childPopulator.ensureChild<GtkObjectFrame>();
-			std::string label = getNameAndType(*component);
+			std::string label = getNameAndType(component);
 			if (name && strlen(name)) label = std::string(name) + ": " + label;
 			if (frame.get_label() != label) {
 				frame.set_label(label);
 			}
 			frame.childPopulator.reset();
-			component->onInspect(frame);
+			component.onInspect(frame);
 			frame.childPopulator.pruneRemaining();
-		}
-		components.clear();
+		});
 	}
 }
 

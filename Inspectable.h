@@ -45,8 +45,8 @@ public:
 		return getNameFor<Inspectable>(this);
 	}
 
-	virtual void getChildren(std::vector<Inspectable*>& children) {}
-	virtual void getComponents(std::vector<Inspectable*>& children) {}
+	virtual void getChildren(std::function<void(Inspectable&)> iterator) {}
+	virtual void getComponents(std::function<void(Inspectable&)> iterator) {}
 	virtual void onInspect(Inspector& inspector) {};
 
 	void addDestroyListener(DestroyListener* listener);
