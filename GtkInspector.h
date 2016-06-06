@@ -101,7 +101,7 @@ private:
 	{
 	public:
 		Gtk::TreeModelColumn<Glib::ustring> name;
-		Gtk::TreeModelColumn<InspectableWeakRef> pointer;
+		Gtk::TreeModelColumn<InspectableWeakRef*> pointer;
 		MyModelColumns() {
 			add(name);
 			add(pointer);

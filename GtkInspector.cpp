@@ -74,8 +74,8 @@ void GtkInspector::init()
 	treeView->get_selection()->signal_changed().connect([&] {
 		auto selectedIt = treeView->get_selection()->get_selected();
 		auto node = selectedIt->get_value(columns.pointer);
-		if (node.get()) {
-			setupDetails(node.get());
+		if (node && node->get()) {
+			setupDetails(node->get());
 		}
 	});
 	
@@ -145,7 +145,7 @@ void GtkInspector::updateChildren(Inspectable& node, const Gtk::TreeNodeChildren
 	for (auto srcChild : children) {
 		if (dstIt == dstChildren.end()) {
 			dstIt = treeStore->append(dstChildren);
-			dstIt->set_value(columns.pointer, InspectableWeakRef(&node));
+			dstIt->set_value(columns.pointer, new InspectableWeakRef(&node));
 		}
 		updateNode(*srcChild, *dstIt);
 		++dstIt;
@@ -168,10 +168,15 @@ Glib::ustring GtkInspector::getNodeName(Inspectable& entity)
 void GtkInspector::updateNode(Inspectable& node, const Gtk::TreeRow& row)
 {
 	auto weakRef = row.get_value(columns.pointer);
-	auto shouldUpdate = updateNamesToggle->get_active() || weakRef.get() != &node;
+	auto shouldUpdate = updateNamesToggle->get_active() || !weakRef || (weakRef->get() != &node);
 	if (shouldUpdate) {
 		row.set_value(columns.name, getNodeName(node));
-		row.set_value(columns.pointer, InspectableWeakRef(&node));
+		if (weakRef) {
+			weakRef->set(&node);
+		}
+		else {
+			row.set_value(columns.pointer, new InspectableWeakRef(&node));
+		}
 	}
 	if (detailNode == &node) {
 		setupDetails(detailNode);
