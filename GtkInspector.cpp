@@ -61,12 +61,13 @@ void GtkInspector::init()
 	refreshButton->signal_clicked().connect([&] {
 		refreshNextFrame = true;
 	});
-	autoRefreshToggle = new Gtk::ToggleButton("Auto refresh");
-	updateNamesToggle = new Gtk::ToggleButton("Names update");
+	autoRefreshToggle = new Gtk::ToggleButton("Auto refresh tree");
+	autoRefreshDetail = new Gtk::ToggleButton("Auto refresh detail");
 	
 	buttonBar->add(*refreshButton);
 	buttonBar->add(*autoRefreshToggle);
-	
+	buttonBar->add(*autoRefreshDetail);
+
 	treeView = new Gtk::TreeView();
 	treeStore = Gtk::TreeStore::create(columns);
 	treeView->set_model(treeStore);
@@ -88,7 +89,7 @@ void GtkInspector::init()
 	scrollPane = Gtk::manage(new Gtk::ScrolledWindow());
 	scrollPane->add(*detailsPane);
 	paneSplit->add2(*scrollPane);
-	paneSplit->set_position(100);
+	paneSplit->set_position(200);
 	
 	mainBox->pack_end(*paneSplit);
 	
@@ -167,7 +168,7 @@ Glib::ustring GtkInspector::getNodeName(Inspectable& entity)
 void GtkInspector::updateNode(Inspectable& node, const Gtk::TreeRow& row)
 {
 	auto weakRef = row.get_value(columns.pointer);
-	auto shouldUpdate = updateNamesToggle->get_active() || !weakRef || (weakRef->get() != &node);
+	auto shouldUpdate = !weakRef || (weakRef->get() != &node);
 	if (shouldUpdate) {
 		row.set_value(columns.name, getNodeName(node));
 		if (weakRef) {
@@ -177,10 +178,6 @@ void GtkInspector::updateNode(Inspectable& node, const Gtk::TreeRow& row)
 			row.set_value(columns.pointer, new InspectableWeakRef(&node));
 		}
 	}
-	if (detailNode == &node) {
-		setupDetails(detailNode);
-	}
-	
 	updateChildren(node, row.children());
 }
 
@@ -188,21 +185,27 @@ void GtkInspector::updateNode(Inspectable& node, const Gtk::TreeRow& row)
 
 bool GtkInspector::update(Inspectable* node)
 {
-// 	std::cout << "GtkInspector::update\n";
 	if (autoRefreshToggle->get_active() || refreshNextFrame) {
 		setRoot(node);
+	}
+	if (autoRefreshDetail->get_active() || refreshNextFrame) {
+		updateDetailNode();
 		refreshNextFrame = false;
 	}
-// 	bool finished = false;
 	while (gtkMain->events_pending()) {
-// 		finished = !
 		gtkMain->iteration(false);
-// 		std::cout << "GtkInspector::update iteration finished="<<finished<<"\n";
 	}
-// 	return finished;
 	return false;
 }
 
+void GtkInspector::updateDetailNode() {
+	childPopulator.setContainer(detailsPane);
+	childPopulator.reset();
+	if (detailNode) {
+		inspectAsMain("Node", *detailNode);
+	}
+	childPopulator.pruneRemaining();
+}
 
 }
 

@@ -115,8 +115,8 @@ private:
 	
 	Gtk::Button* refreshButton;
 	Gtk::ToggleButton* autoRefreshToggle;
-	Gtk::ToggleButton* updateNamesToggle;
-	
+	Gtk::ToggleButton* autoRefreshDetail;
+
 	Gtk::TreeView* treeView;
 	Glib::RefPtr<Gtk::TreeStore> treeStore;
     Gtk::Box* detailsPane;
