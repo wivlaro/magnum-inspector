@@ -17,6 +17,7 @@ public:
 		ChildWidget* widget = nullptr;
 		if (childIndex < childrenIterating.size()) {
 			auto child = childrenIterating[childIndex];
+			//TODO possibly we should compare G_OBJECT_TYPE(child->gobj()) and ChildWidget::get_type();
 			widget = dynamic_cast<ChildWidget*>(child);
 			if (!widget) {
 				while (childIndex < childrenIterating.size()) {
