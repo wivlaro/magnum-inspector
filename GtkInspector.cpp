@@ -62,6 +62,7 @@ void GtkInspector::init()
 		refreshNextFrame = true;
 	});
 	autoRefreshToggle = new Gtk::ToggleButton("Auto refresh tree");
+	autoRefreshToggle->set_active(true);
 	autoRefreshDetail = new Gtk::ToggleButton("Auto refresh detail");
 	
 	buttonBar->add(*refreshButton);

@@ -6,6 +6,7 @@
 #include <map>
 #include <functional>
 #include <forward_list>
+#include <iostream>
 
 #if defined(__GNUG__)
 #define HAS_RTTI
@@ -63,19 +64,20 @@ public:
 	
 	template<typename T>
 	static Inspectable* cachedDynamicCast(T* source) {
-		static DynamicCastCache<T> cache;
-		auto it = cache.cache.find(source);
+//		static DynamicCastCache<T> cache;
+//		auto it = cache.cache.find(source);
 		Inspectable* result;
-		if (it == cache.cache.end()) {
+//		if (it == cache.cache.end()) {
 			result = dynamic_cast<Inspectable*>(source);
-			cache.cache[source] = result;
-			if (result) {
-				result->addDestroyListener(&cache);
-			}
-		}
-		else {
-			result = it->second;
-		}
+////			std::cout << "Caching " << source << " (" << typeid(*source).name() << ") in " << &cache << std::endl;
+//			cache.cache[source] = result;
+//			if (result) {
+//				result->addDestroyListener(&cache);
+//			}
+//		}
+//		else {
+//			result = it->second;
+//		}
 		return result;
 	}
 
