@@ -86,16 +86,7 @@ public:
 	
 	virtual void editable(const char* name, Inspectable* i) = 0;
 	virtual void readonly(const char* name, Inspectable* i) = 0;
-	
-	virtual void editable(const char* name, Magnum::SceneGraph::AbstractObject2D& i) = 0;
-	virtual void readonly(const char* name, Magnum::SceneGraph::AbstractObject2D& i) = 0;
-	virtual void editable(const char* name, Magnum::SceneGraph::AbstractObject3D& i) = 0;
-	virtual void readonly(const char* name, Magnum::SceneGraph::AbstractObject3D& i) = 0;
-	virtual void editable(const char* name, Magnum::SceneGraph::AbstractFeature2D& i) = 0;
-	virtual void readonly(const char* name, Magnum::SceneGraph::AbstractFeature2D& i) = 0;
-	virtual void editable(const char* name, Magnum::SceneGraph::AbstractFeature3D& i) = 0;
-	virtual void readonly(const char* name, Magnum::SceneGraph::AbstractFeature3D& i) = 0;
-    
+
 	static std::string demangle(const char* name);
 	
     template<typename K, typename V>

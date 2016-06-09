@@ -5,7 +5,6 @@
 #include <gtkmm/container.h>
 #include "GtkInspectionField.h"
 #include "Inspectable.h"
-#include <Magnum/SceneGraph/AbstractObject.h>
 
 namespace MagnumInspector {
 
@@ -54,16 +53,6 @@ public:
 	virtual void editable(const char* name, Inspectable* i);
 	virtual void readonly(const char* name, Inspectable* i);
 	
-	virtual void editable(const char* name, Magnum::SceneGraph::AbstractObject2D& i) { editableObject(name, i); }
-	virtual void readonly(const char* name, Magnum::SceneGraph::AbstractObject2D& i) { readonlyObject(name, i); }
-	virtual void editable(const char* name, Magnum::SceneGraph::AbstractObject3D& i) { editableObject(name, i); }
-	virtual void readonly(const char* name, Magnum::SceneGraph::AbstractObject3D& i) { readonlyObject(name, i); }
-	
-	virtual void editable(const char* name, Magnum::SceneGraph::AbstractFeature2D& i) { editableFeature(name, i); }
-	virtual void readonly(const char* name, Magnum::SceneGraph::AbstractFeature2D& i) { readonlyFeature(name, i); }
-	virtual void editable(const char* name, Magnum::SceneGraph::AbstractFeature3D& i) { editableFeature(name, i); }
-	virtual void readonly(const char* name, Magnum::SceneGraph::AbstractFeature3D& i) { readonlyFeature(name, i); }
-
 	virtual void inspectAsMain(const char* name, Inspectable& i);
 
 protected:
@@ -80,17 +69,7 @@ protected:
 	}
 	
 private:
-	template<uint Dimensions, typename ValueType>
-	void editableObject(const char* name, Magnum::SceneGraph::AbstractObject<Dimensions, ValueType>& object);
-	template<uint Dimensions, typename ValueType>
-	void readonlyObject(const char* name, Magnum::SceneGraph::AbstractObject<Dimensions, ValueType>& object);
-	
-	template<uint Dimensions, typename ValueType>
-	void editableFeature(const char* name, Magnum::SceneGraph::AbstractFeature<Dimensions, ValueType>& feature);
-	
-	template<uint Dimensions, typename ValueType>
-	void readonlyFeature(const char* name, Magnum::SceneGraph::AbstractFeature<Dimensions, ValueType>& feature);
-	
+
 
 	template<typename ValueType>
 	void editableInteger(const char* name, ValueType& i);
