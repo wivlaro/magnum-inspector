@@ -3,6 +3,7 @@
 #include "forwarddeclarations.h"
 #include <string>
 #include <vector>
+#include <map>
 #include <functional>
 #include <forward_list>
 
@@ -51,6 +52,32 @@ public:
 
 	void addDestroyListener(DestroyListener* listener);
 	void removeDestroyListener(DestroyListener* listener);
+	
+	template<typename T>
+	struct DynamicCastCache : DestroyListener {
+		std::map<const T*,Inspectable*> cache;
+		virtual void onDestroy(Inspectable* source) {
+			cache.erase(dynamic_cast<T*>(source));
+		}
+	};
+	
+	template<typename T>
+	static Inspectable* cachedDynamicCast(T* source) {
+		static DynamicCastCache<T> cache;
+		auto it = cache.cache.find(source);
+		Inspectable* result;
+		if (it == cache.cache.end()) {
+			result = dynamic_cast<Inspectable*>(source);
+			cache.cache[source] = result;
+			if (result) {
+				result->addDestroyListener(&cache);
+			}
+		}
+		else {
+			result = it->second;
+		}
+		return result;
+	}
 
 private:
 
