@@ -37,7 +37,10 @@ public:
 	
 	virtual void editable(const char* name, bool& f) = 0;
 	virtual void readonly(const char* name, bool f) = 0;
-	
+
+	virtual void editable(const char* name, int* f, unsigned n, unsigned m) = 0;
+	virtual void readonly(const char* name, const int* f, unsigned n, unsigned m) = 0;
+
 	virtual void editable(const char* name, float* f, unsigned n, unsigned m) = 0;
 	virtual void readonly(const char* name, const float* f, unsigned n, unsigned m) = 0;
 	
@@ -64,7 +67,10 @@ public:
 	
 	virtual void editable(const char* name, unsigned long& i) = 0;
 	virtual void readonly(const char* name, const unsigned long& i) = 0;
-	
+
+	virtual void editable(const char* name, Magnum::Vector2i& i) { editable(name, i.data(), 2u, 1u); }
+	virtual void readonly(const char* name, const Magnum::Vector2i& i) { readonly(name, i.data(), 2u, 1u); }
+
 	virtual void editable(const char* name, Magnum::Vector2& i) { editable(name, i.data(), 2u, 1u); }
 	virtual void readonly(const char* name, const Magnum::Vector2& i) { readonly(name, i.data(), 2u, 1u); }
 	

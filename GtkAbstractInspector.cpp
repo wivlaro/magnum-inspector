@@ -9,7 +9,26 @@
 #include <numeric>
 
 namespace MagnumInspector {
-	
+
+void GtkAbstractInspector::readonly(const char* name, const int* f, uint n, uint m)
+{
+	auto& field = addField<GtkMatrixWidget>(name);
+	field.update<Gtk::Label,const int>(f, n, m, [](Gtk::Label& field, const int& value) {
+		ensure_text(field, std::to_string(value));
+	});
+}
+
+void GtkAbstractInspector::editable(const char* name, int* f, uint n, uint m)
+{
+	auto& field = addField<GtkMatrixWidget>(name);
+	field.update<Gtk::SpinButton,int>(f, n, m, [](Gtk::SpinButton& field, int& value) {
+		if (!field.has_focus()) ensure_value(field, double(value));
+		field.signal_value_changed().connect([&] {
+			value = int(field.get_value());
+		});
+	});
+}
+
 void GtkAbstractInspector::readonly(const char* name, const float* f, uint n, uint m)
 {
 	auto& field = addField<GtkMatrixWidget>(name);

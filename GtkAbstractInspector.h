@@ -46,8 +46,11 @@ public:
 	
     virtual void editable(const char* name, float& f);
     virtual void readonly(const char* name, const float& f);
-	
-    virtual void editable(const char* name, float* f, uint n, uint m);
+
+	virtual void editable(const char* name, int* f, uint n, uint m);
+	virtual void readonly(const char* name, const int* f, uint n, uint m);
+
+	virtual void editable(const char* name, float* f, uint n, uint m);
     virtual void readonly(const char* name, const float* f, uint n, uint m);
 	
 	virtual void editable(const char* name, Inspectable* i);
