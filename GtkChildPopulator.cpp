@@ -11,7 +11,7 @@ GtkChildPopulator::GtkChildPopulator(Gtk::Container* container_in)
 
 void GtkChildPopulator::reset() {
 	childIndex = 0;
-	childrenIterating = std::move(container->get_children());
+	childrenIterating = container->get_children();
 }
 
 void GtkChildPopulator::setContainer(Gtk::Container* container)
