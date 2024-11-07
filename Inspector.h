@@ -127,12 +127,12 @@ public:
     }
     
     template<typename T>
-    void editable(const char* name, boost::shared_ptr<T>& target) {
+    void editable(const char* name, std::shared_ptr<T>& target) {
         if (auto actual = target.get()) editable(name, actual);
     }
 	
     template<typename T>
-    void readonly(const char* name, boost::shared_ptr<T>& target) {
+    void readonly(const char* name, std::shared_ptr<T>& target) {
         if (auto actual = target.get()) readonly(name, actual);
     }
 #endif

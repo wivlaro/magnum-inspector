@@ -21,7 +21,7 @@ class GtkInspector	: public GtkAbstractInspector, public Inspectable::DestroyLis
 {
 public:
     GtkInspector();
-	~GtkInspector();
+	virtual ~GtkInspector();
 	
 	void init();
 	
