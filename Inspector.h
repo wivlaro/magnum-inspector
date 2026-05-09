@@ -114,6 +114,19 @@ public:
     void readonly(const char* name, std::vector<T>& target) {
 		for (size_t i = 0; i < target.size(); i++) readonly((std::string(name) + "[" + std::to_string(i) + "]").c_str(), target[i]);
     }
+
+	template<typename T, size_t NameLength>
+	void editable(const char (&name)[NameLength], std::optional<T>& target) {
+	    auto suffix = " set";
+    	char setName[NameLength + sizeof(suffix)];
+    	auto end= strcpy(setName, name);
+    	strcpy(end, suffix);
+    	bool hasValue = target.has_value();
+    	editable(setName, hasValue);
+    	if (hasValue && !target) target = T{};
+    	else if (!hasValue && target) target = std::nullopt;
+    	if (target) editable(name, *target);
+	}
  
 #ifdef MAGNUMINSPECTOR_BOOST
     template<typename T>
