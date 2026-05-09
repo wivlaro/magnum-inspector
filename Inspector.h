@@ -5,9 +5,6 @@
 #include <map>
 #include <vector>
 #include <set>
-#ifdef MAGNUMINSPECTOR_BOOST
-#include <boost/weak_ptr.hpp>
-#endif
 
 #include <Magnum/Magnum.h>
 #include <Magnum/Math/Vector2.h>
@@ -128,14 +125,13 @@ public:
     	if (target) editable(name, *target);
 	}
  
-#ifdef MAGNUMINSPECTOR_BOOST
     template<typename T>
-    void editable(const char* name, boost::weak_ptr<T>& target) {
+    void editable(const char* name, std::weak_ptr<T>& target) {
         if (auto actual = target.lock()) editable(name, actual.get());
     }
 	
     template<typename T>
-    void readonly(const char* name, boost::weak_ptr<T>& target) {
+    void readonly(const char* name, std::weak_ptr<T>& target) {
         if (auto actual = target.lock()) readonly(name, actual.get());
     }
     
@@ -148,7 +144,6 @@ public:
     void readonly(const char* name, std::shared_ptr<T>& target) {
         if (auto actual = target.get()) readonly(name, actual);
     }
-#endif
 };
 
 
